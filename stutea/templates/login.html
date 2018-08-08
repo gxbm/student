@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/login.css"/>
+    <script src="../static/js/jQuery.js" type="text/javascript" charset="utf-8"></script>
+</head>
+	<body>
+		<div class="login">
+            <div class="content clearfix">
+
+				<div class="content-left">
+					<div class="logo">
+						<img src="../static/images/logo.png" alt=""/>
+						<p>山西师范大学就业管理系统</p>
+					</div>
+				</div>
+				<div class="shu"></div>
+				<div class="content-right">
+					<div class="login-form">
+						<h2>用户登录/LOGIN</h2>
+						<div class="identifire">
+							<span>身　份：</span>
+							<select>
+								<option value="学生" selected="selected">学生</option>
+								<option value="教师教辅人员">教师教辅人员</option>
+							</select>
+						</div>
+						<div class="account clearfix">
+							<span>姓　名：</span>
+							<input type="text" value="" name="user" id="user"/>
+						</div>
+						<div class="password clearfix">
+							<span>密　码：</span>
+							<input type="password" value="" name="pass" id="pass"/>
+						</div>
+						<div class="code clearfix">
+							<span>验证码：</span>
+							<input id="ceshi" type="text" value="" />
+							<em>
+                                <canvas id="canvas" width=128px height=35px background-color="red"></canvas>
+                            </em>
+						</div>
+                        <div class="code clearfix">
+							<span>保存密码？</span>
+							<input type="checkbox" id="save" name="save" value="1" style="width:20px;height: 20px;margin-top: 5px"/>
+						    <span id="meaaage" style="padding-left: 20px;color: red;font-size: 14px"></span>
+                             <span id="one" style="color: red;font-size: 14px"> {{ status }}</span>
+                        </div>
+						<div class="btn">
+							<span id="login"><a>登录</a></span>
+							<span class="forget"><a href="/reg">忘记密码</a></span>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+
+            var cas=$("#canvas")[0].getContext('2d')
+            cas.font="25px Arial"
+             cas.fillText(0,0,128,35)
+            var text=""
+            for(var i=0;i<2;i++){
+                var a=parseInt(Math.random()*10)
+                var b=String.fromCharCode(Math.random()*26+65)
+                text+=a+b
+            }
+            cas.strokeText(text,50,20)
+
+            for(var i=0;i<parseInt(Math.random()*200);i++){
+                cas.beginPath()
+                var color="#"+Math.floor(Math.random()*0xffffff).toString(16)
+                cas.strokeStyle=`${color}`
+
+                cas.moveTo(parseInt(Math.random()*128),parseInt(Math.random()*35))
+                cas.lineTo(parseInt(Math.random()*128),parseInt(Math.random()*35))
+
+                cas.closePath()
+                cas.stroke()
+            }
+            $('#login').on('click','a',function(){
+                var params=""
+                var aVal = $('.identifire select');
+                if (aVal.val() == '学生') {
+                    {#$(this).attr('href','StudentIndex.html');#}
+                    params+="sign="+1
+                } else if (aVal.val() == '教师教辅人员'){
+                    $(this).attr('href','TeacherIndex.html');
+                    params+="sign="+0
+                }
+                var ceshi=$("#ceshi").val()
+                text1=text.toLowerCase()
+                if(!$("#user").val()){
+                    alert("用户名不能为空")
+                }else if(!$("#pass").val()){
+                    alert("密码不能为空")
+                }else if(text!=ceshi && text1!=ceshi){
+                    $("#meaaage").html("验证码错误")
+                }else{
+                    params+="&user="+$("#user").val()+"&pass="+$("#pass").val()+"&save="+$("#save").val()
+                    $.ajax({
+                    type:"post",
+                    url:"/login/",
+                    data:params,
+                    success:function (data) {
+                        if (data.length<1000){
+                            data = JSON.parse(data);
+                             if (data["status"] == 1) {
+                                $("#one").html("帐户名或密码错误")
+                             }
+                        }else {
+                            location.href="/"
+                        }
+                    }
+
+                })
+                }
+            });
+   </script>
+		<!--<script type="text/javascript">
+			$(document).ready(function(){
+				if (window.PIE) {
+			        $('.rounded').each(function() {
+			            PIE.attach(this);
+			        });
+			    }
+			});
+		</script>-->
+	</body>
+</html>

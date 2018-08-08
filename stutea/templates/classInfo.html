@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../static/js/jQuery.js"></script>
+     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/css/TeacherInfo.css"/>
+</head>
+<style>
+ .search{
+    width: 599px;
+    height: 40px;
+    border: 1px solid #333;
+    background-color: #fff;
+    position: relative;
+    margin: 20px 180px;
+ }
+  .search  .searchcon{
+    height:35px;
+    width: 550px;
+    outline: none;
+    border: none;
+    line-height: 40px;
+    position: absolute;
+      right: 0;
+  }
+   .search  button{
+    display: block;
+    width: 60px;
+    height: 42px;
+    background: #82b6d7;
+    font-size: 18px;
+    color: #fff;
+    line-height: 42px;
+    text-align: center;
+    position: absolute;
+    right:-80px;
+    top:0;
+   }
+    .search a{
+        display: block;
+        width: 60px;
+        height: 42px;
+        background: #82b6d7;
+        font-size: 18px;
+        color: #fff;
+        line-height: 42px;
+        text-align: center;
+        position: absolute;
+        right:-160px;
+        top:0;
+    }
+</style>
+<body>
+    <div class="container flgure">
+    <div class="search">
+        <form action="/classsearch">
+            <input type="text" class="searchcon" placeholder="查找班级名称" name="aa">
+            <button type="submit">搜索</button>
+        </form>
+         <a href="/classadd" target="main">添加</a>
+    </div>
+        <div class="basic" style="margin: 0 auto">
+            <table  class="table table-bordered table-hover active">
+                <tr class="table-title">
+                    <th >ID</th>
+                    <th >年级</th>
+                    <th >班级名称</th>
+                    <th >班级课程</th>
+                    <th >代课教师</th>
+                    <th >操作</th>
+                </tr>
+                {%  for item in date %}
+                <tr>
+                    <td class="changonly">{{ item.cnum }}</td>
+                    <td >{{ item.gname }}</td>
+                    <td  >{{ item.cname }}</td>
+                    <td  >{{ item.staname }}</td>
+                    <td  >
+                        {{ item.tname }}
+                    </td>
+                    <td class="changonly">
+                        <a href="/classedit/?id={{item.cnum}}" style="text-decoration: none ;color: #5CA4D3; ">编辑  </a>
+                        <a href="/classdele/?id={{item.cnum}}" style="text-decoration: none ;color: #5CA4D3">  删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% autoescape off %}
+             {{ str }}
+            {% endautoescape %}
+        </div>
+    </div>
+</body>
+</html>

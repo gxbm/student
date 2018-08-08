@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../static/js/vue.js"></script>
+</head>
+<body>
+<div class="app" id="app">
+    <form action="/fileload/" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+              <label for="sex" >所属年级</label>
+              <select name="gid" id="gid" v-model="gdate" @change="stageadd()">
+                  {% verbatim %}
+                  <option value="0"> 请选择年级</option>
+                  <option :value="row.gid" v-for="row in gradeDate" @click="addstage(row.gid)">{{ row.gname }}</option>
+                  {% endverbatim %}
+              </select>
+          </div>
+        <div class="form-group">
+            <label for="sex">所属学科</label>
+              <select name="staid" id="staid" >
+                  {% verbatim %}
+                  <option :value="item.staid" v-for="item in staidDate" >{{ item.staname }}</option>
+                  {% endverbatim %}
+              </select>
+          </div>
+        <input type="file" name="file">
+        <input type="submit"> <br>
+        {% if file.file.0 %}
+         {{ file.file.0 }}
+        {% endif %}
+    </form>
+ </div>
+</body>
+<script>
+   new Vue({
+        el:"#app",
+        data:{
+            gradeDate:[],
+            staidDate:[],
+            typesDate:[],
+            opts:[],
+            gdate:'0',
+            types:0,
+            tyname:"",
+            title:"",
+            result:"",
+            tigan:""
+        },
+        mounted(){
+            fetch("/gradetype/",{
+            }).then(function (e) {
+                return e.json()
+            }).then((e)=>{
+                this.gradeDate=e
+            }),
+             fetch("/typeshiti/",{
+            }).then(function (e) {
+                 return e.json()
+            }).then((e)=>{
+                console.log(e);
+                this.typesDate=e
+            })
+        },
+        methods:{
+            addstage(gid){
+                this.gdate=gid
+            },
+            stageadd(){
+                fetch("/stagetype/?gid="+this.gdate).then(function (e) {
+                    return e.json()
+                }).then((e)=>{
+                    this.staidDate=e
+                })
+            },
+            type(tyid,tyname){
+                this.types=tyid
+                this.tyname=tyname
+            },
+            addopt(){
+                var obj={}
+                obj.id=Math.random()*100+new Date()
+                obj.value=""
+                this.opts.push(obj)
+            },
+            del(id){
+                return this.opts=this.opts.filter((item)=> {
+                    if(item.id!=id){
+                        return item
+                    }
+                })
+            },
+            submit(){
+                var shitiid=$("input[name=shiti]").val()
+                var staid=$("select[name=staid]").val()
+                if (this.types==`tixing-03`){
+                    arr1=null
+                }else{
+                    arr=this.opts.map((item)=>{
+                    return item.value
+                })
+                    arr1=arr.join("|")
+                }
+                var parmas="shitiid="+shitiid+"&gid="+this.gdate+"&staid="+staid+"&tyid="+this.types+"&tigan="+this.tigan+"&answer="+this.result+"&option="+arr1
+                $.ajax({
+                    url:"/shitiadd/",
+                    data:parmas,
+                    type:"post",
+                    success(date){
+                        location.href="/shiti"
+                    }
+                })
+
+            }
+        }
+    })
+</script>
+</html>

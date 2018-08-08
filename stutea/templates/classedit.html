@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../static/js/jQuery.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>add</title>
+</head>
+<style>
+    form{
+        display: block;
+        margin: auto;
+        width: 300px;
+    }
+    .head{
+        padding: 30px 20px 10px 30px;
+        color: #646464;
+        font-size: 15px;
+    }
+    .main{
+        width:800px;
+        height: 40px;
+        background-color: #E7F3F3;
+        margin: 0 auto;
+    }
+    .main .title{
+        width:800px;
+        padding: 5px 0 5px 30px;
+        height: 30px;
+        background: url(../static/images/border.png) no-repeat 0 5px;
+        background-color: #e7f3f3;
+        color: #333436;
+        font-size: 18px;
+        line-height: 30px;
+    }
+</style>
+<body>
+
+ {% for item in date %}
+    <form action="/classedit/?id={{ item.cnum }}" method="post">
+       <div class="form-group">
+          <label for="name">班号</label>
+          <input type="text" class="form-control" id="name" value="{{ item.cnum }}" name="cnum">
+       </div>
+       <div class="form-group">
+          <label for="name">班级名称</label>
+          <input type="text" class="form-control" value="{{ item.cname }}" name="cname">
+       </div>
+       <div class="form-group">
+          <label for="sex">所带年级</label>
+             <select name="gid" id="gid">
+                 {% for item1 in date1 %}
+                     {% if item.gid == item1.gid %}
+                        <option value="{{ item1.gid }}" selected>{{ item1.gname }}</option>
+                     {% else %}
+                        <option value="{{ item1.gid }}" >{{ item1.gname }}</option>
+                     {% endif %}
+                 {% endfor %}
+             </select>
+       </div>
+       <div class="form-group">
+          <label for="sex">年级学科</label>
+          <select name="staid" id="staid">
+             {% for item in date %}
+              <option value="{{ item.staid }}" >{{ item.staname }}</option>
+             {% endfor %}
+      </select>
+       </div>
+       <div class="form-group">
+          <label for="sex" >学科教师</label>
+          <select name="tnum" id="tnum">
+             {% for item in date %}
+              <option value="{{ item.tnum }}" >{{ item.tname }}</option>
+             {% endfor %}
+      </select>
+       </div>
+       <button type="submit"class="btn btn-default">Submit</button>
+       <div style="display:block;width: 300px;height:100px;border: 1px solid #0f0f0f " class="innde"></div>
+       <input type="hidden" value="" name="info">
+    </form>
+ {% endfor %}
+<script>
+    obj={}
+    $("#gid").change(function () {
+        //处理年级请求
+        var gid=$(this).val()
+        data=""
+        data+="gid="+gid
+        console.log(data);
+        $.ajax({
+            type:"post",
+            url:"/grade/",
+            data:data,
+            dataType:'json',
+            success:function (data) {
+              //staids: "xueke-01,xueke-02", stanames: "语文,数学"
+                // "xueke-01', "语文"
+                // "xueke-01', "语文"
+                // 'xueke-02","数学"
+                if (data){
+                    $('#staid').removeAttr('disabled')
+                    var keys=data["staids"].split(",")
+                    var vals=data["stanames"].split(",")
+                    arr={}
+                    for(var i in keys){
+                        arr[keys[i]]=vals[i]
+                    }
+                    options='<option value="0" >请选择科目</option>'
+                    for(var i in arr){
+                        options+=`<option value="${i}" >${arr[i]}</option>`
+                    }
+                    $("#staid").html(options)
+                    //教师
+                    $('#staid').change(function () {
+                        var staid=$(this).val()
+                         $.ajax({
+                            type:"post",
+                            url:"/stage/",
+                            data:{staid:staid},
+                            dataType:"json",
+                            success(data){
+                                if (data){
+                                    $('#tnum').removeAttr("disabled")
+                                    var keys=[]
+                                    var vals=[]
+                                    for (var i in data){
+                                        keys.push(data[i]["tunion"].split(","))
+                                        vals.push(data[i]["tname"].split(","))
+                                    }
+                                    //UAIF-03,UAIF-04,
+                                    // 康爷也,李治河,
+                                    arr={}
+                                    for(var i in keys){
+                                        arr[keys[i]]=vals[i]
+                                    }
+                                    options='<option value="0" >请选择教师</option>'
+                                    for(var i in arr){
+                                        options+= `<option value="${i}" >${arr[i]}</option>`
+                                    }
+                                    $('#tnum').html(options)
+
+                                    //添加数据
+                                    $("#tnum").change(function () {
+                                        var staid=$("select[name=staid]").select().val()
+
+                                        var tnum=$("select[name=tnum]").val()
+                                        var staname=$("select[name=staid]").find("option:eq("+$("select[name=staid]")[0].selectedIndex+")").html()
+                                        var tname=$("select[name=tnum]").find("option:eq("+$("select[name=tnum]")[0].selectedIndex+")").html()
+                                        console.log(staid,tnum,staname,tname)
+                                        newobj={}
+                                        newobj.staid=staid
+                                        newobj.staname=staname
+                                        newobj.tnum=tnum
+                                        newobj.tname=tname
+                                        obj[staid]=newobj
+                                        list=""
+                                        for(var item in obj){
+                                            list+=`<li>${obj[item]['staname']}-${obj[item]['tname']}<span attr="${obj[item]['staid']}" style="padding:10px">X</span></li>`
+                                        }
+                                        $(".innde").html(list)
+                                    })
+                                }else {
+                                     $('#tnum').attr("disabled")
+                                    $("#tnum").html("")
+                                }
+                            }
+                        })
+                    })
+                } else {
+                    $('#staid').attr("disabled")
+                    $("#staid").html("")
+                }
+
+            }
+        })
+    })
+    $(".innde").on("click","span",function () {
+        staid=$(this).attr("attr")
+        console.log(staid);
+        $(this).parent().remove()
+        for (var item in obj){
+            console.log(item)
+            if (item==staid){
+                delete obj[item]
+            }
+        }
+    })
+    $("button").click(function () {
+        $("input[type=hidden]").val(JSON.stringify(obj))
+    })
+</script>
+</body>
+</html>

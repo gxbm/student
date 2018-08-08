@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>add</title>
+</head>
+<style>
+    form{
+        display: block;
+        margin: auto;
+        width: 300px;
+    }
+    .head{
+        padding: 30px 20px 10px 30px;
+        color: #646464;
+        font-size: 15px;
+    }
+    .main{
+        width:800px;
+        height: 40px;
+        background-color: #E7F3F3;
+        margin: 0 auto;
+    }
+    .main .title{
+        width:800px;
+        padding: 5px 0 5px 30px;
+        height: 30px;
+        background: url(../static/images/border.png) no-repeat 0 5px;
+        background-color: #e7f3f3;
+        color: #333436;
+        font-size: 18px;
+        line-height: 30px;
+    }
+</style>
+<body>
+ {% for item in date %}
+    <form action="/edit/?id={{ item.snum }}" method="post">
+        <div class="form-group">
+            <label for="name">学号</label>
+            <input type="text" class="form-control" id="union" value="{{ item.snuion }}" name="snuion">
+        </div>
+        <div class="form-group">
+            <label for="name">姓名</label>
+            <input type="text" class="form-control" id="name" value="{{ item.sname }}" name="sname">
+        </div>
+        <div class="form-group">
+            <label for="age">性别</label>
+            {% if item.ssex %}
+                <span style="padding: 30px"></span>
+                    男
+                <input type="radio"  id="sex" value="1"  name="ssex" checked>
+                    女
+                <input type="radio"  id="sex" value="0"  name="ssex">
+            {% else %}
+                    女
+                <input type="radio" id="sex" value="0" name="ssex" checked>
+                    男
+                <input type="radio" id="sex" value="1" name="ssex" >
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="age">出生日期</label>
+            <input type="date" class="form-control" id="age" value="{{ item.date }}" name="date">
+        </div>
+        <div class="form-group">
+            <label for="sex">班级</label>
+            <select name="cnum" id="" class="form-control" >
+                  {% for item1 in date1 %}
+                  <option value="{{ item1.cnum }}">{{ item1.cname }}</option>
+                  {% endfor %}
+            </select>
+        </div>
+    {% endfor %}
+        <button type="submit"class="btn btn-default">Submit</button>
+</form>
+</body>
+</html>

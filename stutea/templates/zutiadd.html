@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+     <script src="../static/js/jQuery.js"></script>
+     <script src="../static/js/vue.js"></script>
+     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<style>
+    .tishe{
+        width: 500px;
+        height: 300px;
+        border: 1px solid #000000;
+    }
+</style>
+<body>
+
+      <div class="nav" style="margin: 20px">
+          查询：<input type="text" class="searchmolu">
+                <button type="button" class="btn">搜索一下</button>
+          <br>
+          年级：<div class="nianji">
+                {% for item in result %}
+                    {% if gid == item.gid %}
+                    <button value="{{ item.gid }}" class="searchgid" style="color: red">{{ item.gname }}</button>
+                    {% else %}
+                    <button value="{{ item.gid }}" class="searchgid" >{{ item.gname }}</button>
+                    {% endif %}
+                {% endfor %}
+                </div>
+          学科：<div class="xueke">
+                </div>
+          题型：<div class="tiixng">
+                {% for item in tixingres %}
+                    {% if tyid == item.tyid %}
+                    <button value="{{ item.tyid }}" class="searchtix" style="color: red">{{ item.tyname }}</button>
+                    {% else %}
+                    <button value="{{ item.tyid }}" class="searchtix">{{ item.tyname }}</button>
+                    {% endif %}
+                {% endfor %}
+         <br> 提交：<button type="button" value="提交" class="searchsub">提交</button>
+                </div>
+      </div>
+      {% load demo %}
+       <table  class="table table-bordered table-hover active">
+            <tr class="table-title">
+                <th >ID</th>
+                <th >年级</th>
+                <th >学科</th>
+                <th >题型</th>
+                <th >题干</th>
+                <th >选项</th>
+                <th >答案</th>
+                <th >分数设置</th>
+                <th >选择题目</th>
+            </tr>
+            {%  for item in date %}
+            <tr>
+                <td class="changonly">{{ item.id }}</td>
+                <td>{{ item.gname }}</td>
+                <td>{{ item.staname }}</td>
+                <td>{{ item.tyname }}</td>
+                <td>{{ item.tigan }}</td>
+                <td>
+                    {% for item in item.opt|abc %}
+                  <li>{{ item }}</li>
+                  {% endfor %}
+                </td>
+                <td>{{ item.answer }}</td>
+                <td>
+                    1.<input type="radio" name="opt{{ forloop.counter }}" value=1>
+                    2.<input type="radio" name="opt{{ forloop.counter}}" value=2>
+                    3.<input type="radio" name="opt{{ forloop.counter }}" value=3>
+                    4.<input type="radio" name="opt{{ forloop.counter }}" value=4>
+                    5.<input type="radio" name="opt{{ forloop.counter}}" value=5>
+                    <br>
+                    自定义<input type="text">
+                </td>
+                <td class="changonly">
+                    <input  type="checkbox" style="text-decoration: none ;color: #5CA4D3;" value="{{ item.id }}" name="sele{{ item.id }}">
+                </td>
+            </tr>
+            {% endfor %}
+      </table>
+      <a href="/zutiadd" target="main">添加</a>
+      {{ str|safe }}
+</div>
+<script>
+    {#arr=location.search.slice(1).split("&")#}
+    //["gid=grade-01", "staid=xueke-01", "tyid=tixing-01"]
+    arr=location.search.substr(1).split("&")
+    var query={}
+    for(var i=0;i<arr.length;i++){
+        arr1=arr[i].split("=")
+        query[arr1[0]]=arr1[1]
+    }
+    var xuekeabc=""
+    var searchtype=""  //这样var searchtype定义传值时是undefind
+    var abc=""
+    $(".searchgid").click(function () {
+        abc=$(this).attr("value")
+        query["gid"]=abc
+        $(".searchgid").css({color:'black'})
+        $(this).css({color:'red'})
+        $.ajax({
+            url:"/grade/",
+            type:"post",
+            data:{gid:query["gid"]},
+            {#根据年级查找学科#}
+            dataType:"json",
+            success(date){
+                var keys=date["staids"].split(",")
+                var vals=date["stanames"].split(",")
+                arr={}
+                for(var i in keys){
+                    arr[keys[i]]=vals[i]
+                }
+                console.log(arr);
+                xueke=""
+                for(var item in arr){
+                    xueke+= `<button value="${item}" id=btn>${arr[item]}</button>`
+                }
+                $(".xueke").html(xueke)
+            }
+        })
+    })
+    if(query["gid"]){
+        $.ajax({
+            url:"/grade/",
+            type:"post",
+            data:{gid:query["gid"]},
+            {#根据年级查找学科#}
+            dataType:"json",
+            success(date){
+                var keys=date["staids"].split(",")
+                var vals=date["stanames"].split(",")
+                arr={}
+                for(var i in keys){
+                    arr[keys[i]]=vals[i]
+                }
+                console.log(arr);
+                xueke=""
+                for(var item in arr){
+                    if(item==query["staid"]){
+                        xueke+= `<button value="${item}" id=btn style="color:red">${arr[item]}</button>`
+                    }else{
+                        xueke+= `<button value="${item}" id=btn>${arr[item]}</button>`
+                    }
+                    $(".xueke").html(xueke)
+                }
+            }
+        })
+    }
+    $(".searchtix").click(function () {
+        $(".searchtix").css({color:'black'})
+        $(this).css({color:'red'})
+        searchtype=$(this).attr("value")
+        query["tyid"]=searchtype
+    })
+
+    $(".xueke").on("click","button",function (e) {
+        xuekeabc=$(this).attr("value")
+        query["staid"]=xuekeabc
+        $("#btn").css({color:'black'})
+        $(this).css({color:'red'})
+    })
+    $(".searchsub").click(function (){
+        var parmas=''
+        for(var key in query){
+            if(query[key]){
+                parmas+=`${key}=`+query[key]+"&"
+            }
+        }
+        var parmas=parmas.slice(0,-1)
+        location.href="/zutisearch/?"+parmas
+    })
+    $(".btn").click(function () {
+        var con=$(".searchmolu").val()
+        location.href="/zutisearch/?con="+con
+    })
+
+
+</script>
+</body>
+</html>

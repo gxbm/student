@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../static/js/jQuery.js"></script>
+    <script src="../static/js/vue.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>add</title>
+</head>
+<style>
+    form{
+        display: block;
+        margin: auto;
+        width: 300px;
+    }
+    .head{
+        padding: 30px 20px 10px 30px;
+        color: #646464;
+        font-size: 15px;
+    }
+    .main{
+        width:800px;
+        height: 40px;
+        background-color: #E7F3F3;
+        margin: 0 auto;
+    }
+    .main .title{
+        width:800px;
+        padding: 5px 0 5px 30px;
+        height: 30px;
+        background: url(../static/images/border.png) no-repeat 0 5px;
+        background-color: #e7f3f3;
+        color: #333436;
+        font-size: 18px;
+        line-height: 30px;
+    }
+</style>
+<body>
+{% verbatim %}
+    <div id="app">
+        <form action="/shitiadd/" method="post">
+          <div class="form-group">
+            <label for="name">试题号</label>
+            <input type="text" class="form-control" value="shiti-" name="shiti">
+          </div>
+          <div class="form-group">
+            <label for="sex" >所属年级</label>
+              <select name="gid" id="gid" v-model="gdate" @change="stageadd()" >
+                  <option value="0"> 请选择年级</option>
+                  <option :value="row.gid" v-for="row in gradeDate" @click="addstage(row.gid)">{{ row.gname }}</option>
+              </select>
+          </div>
+          <div class="form-group">
+            <label for="sex">所属学科</label>
+              <select name="staid" id="staid" >
+                  <option :value="item.staid" v-for="item in staidDate" >{{ item.staname }}</option>
+              </select>
+          </div>
+          <div class="form-group">
+             <label for="sex" >添加题型</label>
+             <select name="staid" v-model="types" >
+                  <option :value="item.tyid" v-for="item in typesDate" @click="type(item.tyid,item.tyname)">{{ item.tyname }}</option>
+             </select>
+          </div>
+          <div class="radio" v-if="types==`tixing-01`||types==`tixing-02`">
+              <span v-if="types==`tixing-01`">单选</span>
+              <span v-if="types==`tixing-02`">多选</span><br>
+              题干：<input type="text" v-model="tigan"><br>
+              添加选项：<button type="button" @click="addopt">+</button>
+              <br>
+              <div class="opt" v-for="item in opts">
+                  <input type="text" v-model="item.value">
+                  <input type="button" value="删除" @click="del(item.id)">
+              </div>
+              答案：<input type="text" v-model="result">
+              <input type="button" value="提交" @click="submit">
+          </div>
+          <div class="radio" v-if="types==`tixing-03`">
+              <span >简答</span>
+              题干：<input type="text" v-model="tigan"><br>
+              答案：<input type="text" v-model="result">
+              <input type="button" value="提交" @click="submit">
+          </div>
+        </form>
+    </div>
+{% endverbatim %}
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            gradeDate:[],
+            staidDate:[],
+            typesDate:[],
+            opts:[],
+            gdate:'0',
+            types:0,
+            tyname:"",
+            title:"",
+            result:"",
+            tigan:""
+        },
+        mounted(){
+            fetch("/gradetype/",{
+            }).then(function (e) {
+                return e.json()
+            }).then((e)=>{
+                this.gradeDate=e
+            }),
+             fetch("/typeshiti/",{
+            }).then(function (e) {
+                 return e.json()
+            }).then((e)=>{
+                console.log(e);
+                this.typesDate=e
+            })
+        },
+        methods:{
+            addstage(gid){
+                this.gdate=gid
+            },
+            stageadd(){
+                fetch("/stagetype/?gid="+this.gdate).then(function (e) {
+                    return e.json()
+                }).then((e)=>{
+                    this.staidDate=e
+                })
+            },
+            type(tyid,tyname){
+                this.types=tyid
+                this.tyname=tyname
+            },
+            addopt(){
+                var obj={}
+                obj.id=Math.random()*100+new Date()
+                obj.value=""
+                this.opts.push(obj)
+            },
+            del(id){
+                return this.opts=this.opts.filter((item)=> {
+                    if(item.id!=id){
+                        return item
+                    }
+                })
+            },
+            submit(){
+                var shitiid=$("input[name=shiti]").val()
+                var staid=$("select[name=staid]").val()
+                arr=this.opts.map((item)=>{
+                    return item.value
+                })
+                arr1=arr.join("|")
+                var parmas="shitiid="+shitiid+"&gid="+this.gdate+"&staid="+staid+"&tyid="+this.types+"&tigan="+this.tigan+"&answer="+this.result+"&option="+arr1
+                fetch("/shitiadd/?"+parmas,{method:"POST"}).then(function (e) {
+                    e.text()
+                }).then((e)=>{
+                    if(e=="ok"){
+                        alert("插入成功")
+                    }
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

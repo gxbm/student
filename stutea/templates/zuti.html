@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+     <script src="../static/js/jQuery.js"></script>
+     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+      <table  class="table table-bordered table-hover active">
+            <tr class="table-title">
+                <th >ID</th>
+                <th >组题号</th>
+                <th >试题号</th>
+                <th >出题人</th>
+                <th >年级</th>
+                <th >分数</th>
+                <th >考试开始时间</th>
+                <th >考试结束时间</th>
+                <th >操作</th>
+            </tr>
+            {%  for item in date %}
+            <tr>
+                <td class="changonly">{{ item.id }}</td>
+                <td>{{ item.zutiid }}</td>
+                <td>{{ item.shitiid }}</td>
+                <td>{{ item.tunion }}</td>
+                <td>{{ item.gid }}</td>
+                <td>{{ item.score }}</td>
+                <td>{{ item.startime }}</td>
+                <td>{{ item.endtime }}</td>
+                <td class="changonly">
+                    <a href="/stagedit/?id={{item.staid}}" style="text-decoration: none ;color: #5CA4D3; ">选择  </a>
+                    <a href="/stagedel/?id={{item.staid}}" style="text-decoration: none ;color: #5CA4D3">  删除</a>
+                </td>
+            </tr>
+            {% endfor %}
+      </table>
+      <a href="/zutiadd" target="main">添加</a>
+</body>
+</html>

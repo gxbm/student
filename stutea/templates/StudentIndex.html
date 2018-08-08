@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+     <link rel="stylesheet" href="../static/css/StudentLeft.css">
+    <script src="../static/js/jQuery.js"></script>
+</head>
+<style>
+    *{
+	margin: 0;
+	padding: 0;
+}
+.bx{
+	height: 80px;
+	width: 100%;
+	background: #177ec1;
+}
+.bx .container{
+	margin: 0 60px;
+	overflow: hidden;
+}
+.bx .container .left{
+	width: 201px;
+	height: 43px;
+	padding-top: 25px;
+	color: #FFFFFF;
+	font-size: 24px;
+	float: left;
+}
+.bx .container .right{
+	overflow: hidden;
+	width: 124px;
+	padding-top:30px;
+	float: right;
+}
+.bx .container .right span{
+	font-size: 16px;
+	color: #fff;
+	cursor: pointer;
+}
+.bx .container .right .l{
+	float: left;text-decoration: none;
+}
+.bx .container .right .r{
+	float: right;text-decoration: none;
+	color: white;
+}
+.leftBox{
+	width: 194px;height: 582px;border-left:3px solid #3F89EC ;border-right:3px solid #3F89EC  ;
+	background-color: #666;float: left;opacity: 0.8;
+}
+.leftBox .one{
+	width: 200px;height: 50px;font-size: 20px;
+	color: #fff;cursor: pointer;
+	margin-bottom: 20px;
+	padding-top: 20px;
+	text-align: center;
+	line-height: 40px;
+}
+.leftBox .mulu{
+	display: block;text-decoration: none;
+	color: #fff;
+	width: 194px;height:40px;
+	margin-bottom: 10px;
+	text-align: center;
+	line-height:40px;
+}
+.leftBox .mulu:hover{
+	background-color: #dddddd;color: black;
+}
+.con{
+	width: 83%;height:80%;
+	float: right;
+}
+</style>
+<body>
+<div class="bx">
+    <div class="container">
+        <h2 class="left">学生管理系统</h2>
+        <div class="right">
+            <a href="/out/" class="r">退出登陆</a>
+        </div>
+    </div>
+</div>
+<div class="nav" style="float: left;">
+    <div class="nav-list">
+        <div class="nav-tit" id="personal">
+            <img src="../static/images/personal-msg.png" style="height: 30px" alt="">
+            <span>个人信息</span>
+        </div>
+        <div class="personal-list" id="personal-child">
+            <ul>
+                <li><a href="/studentInfo" target="main">学生信息</a></li>
+                <li><a href="/teacherInfo" target="main">教师信息</a></li>
+                <li><a href="/classInfo" target="main">班级信息</a></li>
+                <li><a href="/grade" target="main">年级信息</a></li>
+                <li><a href="/stage" target="main">学科信息</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="nav-list">
+        <div class="nav-tit" id="personal1">
+            <img src="../static/images/personal-msg.png" style="height: 30px" alt="">
+            <span>考试信息</span>
+        </div>
+        <div class="personal-list" id="personal-child1">
+            <ul>
+                <li><a href="/types" target="main">试题类型</a></li>
+                <li><a href="/shiti" target="main">试题管理</a></li>
+                <li><a href="/zuti" target="main">组题信息</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<iframe class="con" src="" frameborder="0" name="main" scrolling="yes"></iframe>
+<script>
+        $(document).ready(function(){
+				$('#personal').on('click',function(){
+					$('#personal-child').fadeToggle(300);
+				});
+				let aLi = $('#personal-child li');
+				aLi.on('click',function(){
+					$(this).addClass('active').siblings('li').removeClass('active');
+				})
+                $('#personal1').on('click',function(){
+					$('#personal-child1').fadeToggle(300);
+				});
+				let aLi1 = $('#personal-child1 li');
+				aLi1.on('click',function(){
+					$(this).addClass('active').siblings('li').removeClass('active');
+				})
+		});
+</script>
+</body>
+</html>
